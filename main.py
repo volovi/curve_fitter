@@ -10,7 +10,7 @@ learning_rate = 0.001
 
 
 def cost(a, y):
-    return np.mean(0.5 * (a - y) ** 2)
+    return 0.5 * np.mean((a - y) ** 2)
 
 
 def dcost(a, y):
