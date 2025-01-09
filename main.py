@@ -24,27 +24,23 @@ def forward(a, coef):
 def backward(da, *, a_prev, coef, m, v):
     dcoef = np.array([np.mean(da * a_prev ** i) for i in range(coefl)])
 
-    m[0] = 0.9 * m[0] + (1. - 0.9) * dcoef
-    v[0] = 0.9 * v[0] + (1. - 0.9) * dcoef ** 2
+    m *= 0.9; m += (1. - 0.9) * dcoef
+    v *= 0.9; v += (1. - 0.9) * dcoef ** 2
 
-    coef -= learning_rate * m[0] / (np.sqrt(v[0]) + 1e-7)
+    coef -= learning_rate * m / (np.sqrt(v) + 1e-7)
 
 
 def frames():
     coef = np.random.rand(coefl) - 0.5
-    m = [0]
-    v = [0]
-    while True:
-        a = forward(x, coef)
-        yield a
+    a, m, v = np.zeros(num), np.zeros(coefl), np.zeros(coefl)
 
-        if cost(a, y) < 1e-7:
-            break
-
+    while cost(a, y) > 1e-7:
         for i in range(0, num, batch_size):
             bx = x[i : i + batch_size]
             by = y[i : i + batch_size]
-            backward(dcost(forward(bx, coef), by), a_prev=bx, coef=coef, m=m, v=v)
+            ba = a[i : i + batch_size] = forward(bx, coef)
+            backward(dcost(ba, by), a_prev=bx, coef=coef, m=m, v=v)
+        yield a
 
 
 def func(frame):
