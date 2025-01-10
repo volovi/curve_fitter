@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+rng = np.random.default_rng()
+
 coef = 0.2, 0.5, -1., -0.4, 0.3, 0.1
 coefl = len(coef)
 num = 50
@@ -31,8 +33,8 @@ def backward(da, *, a_prev, coef, m, v):
 
 
 def frames():
-    coef = np.random.rand(coefl) - 0.5
-    a, m, v = np.zeros(num), np.zeros(coefl), np.zeros(coefl)
+    coef, m, v = rng.random(coefl) - 0.5, np.zeros(coefl), np.zeros(coefl)
+    a = np.zeros(num)
 
     while cost(a, y) > 1e-7:
         for i in range(0, num, batch_size):
